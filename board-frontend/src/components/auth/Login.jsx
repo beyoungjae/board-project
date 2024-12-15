@@ -1,16 +1,28 @@
 import React, { useState, useMemo, useCallback } from 'react'
 import { TextField, Button, Container, Typography, CircularProgress } from '@mui/material'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { loginUserThunk } from '../../feauters/boardSlice'
 
 const Login = () => {
    const [name, setName] = useState('') // 이름 상태
    const [password, setPassword] = useState('') // 비밀번호 상태
+   const dispatch = useDispatch()
+   const navigate = useNavigate()
+   const { loading, error } = useSelector((state) => state.auth)
 
-   // 임시
-   const loading = false
-   const error = false
-
-   const handleLogin = useCallback((e) => {})
+   const handleLogin = useCallback(
+      (e) => {
+         e.preventDefault()
+         if (name.trim() && password.trim()) {
+            dispatch(loginUserThunk({ name, password }))
+               .unwrap()
+               .then(() => navigate('/'))
+               .catch((error) => console.error('로그인 실패:', error))
+         }
+      },
+      [dispatch, name, password, navigate]
+   )
 
    const loginButtonContent = useMemo(
       () =>
