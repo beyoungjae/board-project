@@ -1,7 +1,9 @@
 const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
+const passport = require('passport')
 const User = require('../models/user')
+const { isNotLoggedIn, isLoggedIn } = require('./middlewares')
 
 // 회원가입 : localhost:8000/auth/join
 router.post('/join', async (req, res, next) => {
@@ -53,12 +55,53 @@ router.post('/join', async (req, res, next) => {
 })
 
 // 로그인 : localhost:8000/auth/login
-router.post('/login', async (req, res, next) => {})
+router.post('/login', isNotLoggedIn, async (req, res, next) => {
+   passport.authenticate('local', (authError, user, info) => {
+      if (authError) {
+         return res.status(500).json({ success: false, message: '인증 중 오류 발생', error: authError })
+      }
+      if (!user) {
+         return res.status(401).json({ success: false, message: info.message || '로그인 실패' })
+      }
+      req.login(user, (loginError) => {
+         if (loginError) {
+            return res.status(500).json({ success: false, message: '로그인 중 오류 발생', error: loginError })
+         }
+         res.json({
+            success: true,
+            message: '로그인 성공',
+            user: {
+               id: user.id,
+               name: user.name,
+            },
+         })
+      })
+   })(req, res, next)
+})
 
 // 로그아웃 : localhost:8000/auth/logout
-router.get('/logout', async (req, res, next) => {})
+router.get('/logout', isLoggedIn, async (req, res, next) => {
+   req.logout((err) => {
+      if (err) {
+         return res.status(500).json({ success: false, message: '로그아웃 중 오류 발생', error: err })
+      }
+      res.json({
+         success: true,
+         message: '로그아웃이 성공적으로 완료되었습니다.',
+      })
+   })
+})
 
 // 로그인 상태 확인 : localhost:8000/auth/status
-router.get('/status', async (req, res, next) => {})
+router.get('/status', isLoggedIn, async (req, res, next) => {
+   res.json({
+      success: true,
+      message: '로그인 상태입니다.',
+      user: {
+         id: req.user.id,
+         name: req.user.name,
+      },
+   })
+})
 
 module.exports = router

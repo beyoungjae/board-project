@@ -3,6 +3,10 @@ const path = require('path')
 const morgan = require('morgan')
 require('dotenv').config()
 const cors = require('cors')
+const passport = require('passport')
+const passportConfig = require('./passport')
+const cookieParser = require('cookie-parser')
+const session = require('express-session')
 
 const app = express()
 app.set('port', process.env.PORT || 8002)
@@ -11,6 +15,8 @@ app.set('port', process.env.PORT || 8002)
 const { sequelize } = require('./models')
 const authRouter = require('./routes/auth')
 const indexRouter = require('./routes/index')
+
+passportConfig()
 
 // 데이터베이스 설정 되었는지 확인
 sequelize
@@ -33,6 +39,24 @@ app.use(morgan('dev'))
 app.use(express.static(path.join(__dirname, 'uploads')))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
+app.use(cookieParser(process.env.COOKIE_SECRET))
+
+// 세션 설정
+app.use(
+   session({
+      resave: false,
+      saveUninitialized: false,
+      secret: process.env.COOKIE_SECRET,
+      cookie: {
+         httpOnly: true,
+         secure: false,
+      },
+   })
+)
+
+// Passport 초기화, 세션 연동
+app.use(passport.initialize())
+app.use(passport.session())
 
 // 라우터 등록
 app.use('/', indexRouter)
