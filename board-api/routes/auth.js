@@ -94,14 +94,19 @@ router.get('/logout', isLoggedIn, async (req, res, next) => {
 
 // 로그인 상태 확인 : localhost:8000/auth/status
 router.get('/status', isLoggedIn, async (req, res, next) => {
-   res.json({
-      success: true,
-      message: '로그인 상태입니다.',
-      user: {
-         id: req.user.id,
-         name: req.user.name,
-      },
-   })
+   if (req.isAuthenticated()) {
+      res.json({
+         isAuthenticated: true,
+         user: {
+            id: req.user.id,
+            name: req.user.name,
+         },
+      })
+   } else {
+      res.json({
+         isAuthenticated: false,
+      })
+   }
 })
 
 module.exports = router
