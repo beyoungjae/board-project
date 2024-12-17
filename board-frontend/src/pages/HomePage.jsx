@@ -1,11 +1,13 @@
-import { Container, Typography, Button, IconButton } from '@mui/material'
+import { Container, Typography, Button, IconButton, Pagination, Stack } from '@mui/material'
 import CreateIcon from '@mui/icons-material/Create'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
-import { useCallback } from 'react'
-import { useDispatch } from 'react-redux'
+import { useCallback, useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
+import { fetchBoardsThunk } from '../feauters/boardSlice'
 import { logoutUserThunk } from '../feauters/authSlice'
 import styled from 'styled-components'
+import PostItem from '../post/PostItem'
 
 const StyledContainer = styled(Container)`
    background-color: #f9f9f9;
@@ -58,8 +60,14 @@ const UserInfoWrapper = styled.div`
 `
 
 const HomePage = ({ isAuthenticated, user }) => {
+   const [page, setPage] = useState(1) // 현재 페이지
    const dispatch = useDispatch()
    const navigate = useNavigate()
+   const { boards, pagination, loading, error } = useSelector((state) => state.boards || { boards: [] })
+
+   useEffect(() => {
+      dispatch(fetchBoardsThunk(page))
+   }, [dispatch, page])
 
    const handleLogout = useCallback(() => {
       dispatch(logoutUserThunk())
@@ -72,38 +80,84 @@ const HomePage = ({ isAuthenticated, user }) => {
          })
    }, [dispatch, navigate])
 
+   // 페이지 변경
+   const handlePageChange = useCallback((event, value) => {
+      setPage(value)
+   }, [])
+
    return (
-      <StyledContainer maxWidth="xs">
-         <StyledTypography variant="h4" align="center" gutterBottom>
-            게시판
-         </StyledTypography>
-         {isAuthenticated ? (
-            <>
-               <IconWrapper>
-                  <StyledLink to="/posts/create">
-                     <StyledIconButton aria-label="글쓰기">
-                        <CreateIcon />
-                     </StyledIconButton>
+      <div>
+         <div>
+            <StyledContainer maxWidth="xs">
+               <StyledTypography variant="h4" align="center" gutterBottom>
+                  게시판
+               </StyledTypography>
+               {isAuthenticated ? (
+                  <>
+                     <IconWrapper>
+                        <StyledLink to="/boards/create">
+                           <StyledIconButton aria-label="글쓰기">
+                              <CreateIcon />
+                           </StyledIconButton>
+                        </StyledLink>
+                        <StyledLink to="/my">
+                           <StyledIconButton aria-label="마이페이지">
+                              <AccountCircleIcon />
+                           </StyledIconButton>
+                        </StyledLink>
+                     </IconWrapper>
+                     <UserInfoWrapper>
+                        <Typography variant="body1">{user?.name}님</Typography>
+                     </UserInfoWrapper>
+                     <StyledButton onClick={handleLogout} variant="outlined">
+                        로그아웃
+                     </StyledButton>
+                  </>
+               ) : (
+                  <StyledLink to="/login">
+                     <StyledButton variant="contained">로그인</StyledButton>
                   </StyledLink>
-                  <StyledLink to="/my">
-                     <StyledIconButton aria-label="마이페이지">
-                        <AccountCircleIcon />
-                     </StyledIconButton>
-                  </StyledLink>
-               </IconWrapper>
-               <UserInfoWrapper>
-                  <Typography variant="body1">{user?.name}님</Typography>
-               </UserInfoWrapper>
-               <StyledButton onClick={handleLogout} variant="outlined">
-                  로그아웃
-               </StyledButton>
-            </>
-         ) : (
-            <StyledLink to="/login">
-               <StyledButton variant="contained">로그인</StyledButton>
-            </StyledLink>
-         )}
-      </StyledContainer>
+               )}
+            </StyledContainer>
+         </div>
+
+         <div>
+            <Container maxWidth="xs">
+               <Typography variant="h4" align="center" gutterBottom>
+                  Home Feed
+               </Typography>
+
+               {loading && (
+                  <Typography variant="body1" align="center">
+                     로딩 중...
+                  </Typography>
+               )}
+
+               {boards.length > 0 ? (
+                  <>
+                     {boards.map((board) => (
+                        <PostItem key={board.id} post={board} isAuthenticated={isAuthenticated} user={user} />
+                     ))}
+                     <Stack spacing={2} sx={{ mt: 3, alignItems: 'center' }}>
+                        <Pagination count={pagination.totalPages} page={page} onChange={handlePageChange} />
+                     </Stack>
+                  </>
+               ) : (
+                  !loading && (
+                     <Typography variant="body1" align="center">
+                        게시물이 없습니다.
+                     </Typography>
+                  )
+               )}
+
+               {error && (
+                  <Typography variant="body1" align="center" color="error">
+                     에러 발생: {error}
+                  </Typography>
+               )}
+            </Container>
+         </div>
+      </div>
    )
 }
 

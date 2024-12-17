@@ -163,4 +163,46 @@ router.get('/:id', async (req, res) => {
    }
 })
 
+// 전체 게시물 불러오기 페이징
+router.get('/', async (req, res) => {
+   try {
+      const page = parseInt(req.query.page, 10) || 1
+      const limit = parseInt(req.query.limit, 10) || 3
+      const offset = (page - 1) * limit
+
+      const count = await Board.count()
+
+      const posts = await Board.findAll({
+         limit,
+         offset,
+         order: [['createdAt', 'DESC']],
+         include: [
+            {
+               model: User,
+               attributes: ['id', 'name', 'email'],
+            },
+            {
+               model: Board,
+               attributes: ['title'],
+            },
+         ],
+      })
+
+      res.json({
+         success: true,
+         posts,
+         pagination: {
+            totalPosts: count,
+            currentPage: page,
+            totalPages: Math.ceil(count / limit),
+            limit,
+         },
+         message: '전체 게시물 리스트를 성공적으로 불러왔습니다.',
+      })
+   } catch (error) {
+      console.error(error)
+      res.status(500).json({ success: false, message: '게시물 리스트를 불러오는 중 오류가 발생했습니다.', error })
+   }
+})
+
 module.exports = router
