@@ -4,7 +4,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
-import { logoutUserThunk } from '../feauters/boardSlice'
+import { logoutUserThunk } from '../feauters/authSlice'
 import styled from 'styled-components'
 
 const StyledContainer = styled(Container)`

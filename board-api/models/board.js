@@ -12,6 +12,10 @@ module.exports = class Board extends Sequelize.Model {
                type: Sequelize.TEXT,
                allowNull: false,
             },
+            img: {
+               type: Sequelize.STRING(200),
+               allowNull: true,
+            },
             createdAt: {
                type: Sequelize.DATE,
                defaultValue: Sequelize.NOW,

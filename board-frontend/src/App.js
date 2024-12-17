@@ -4,7 +4,7 @@ import SignupPage from './pages/SignupPage'
 import LoginPage from './pages/LoginPage'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect } from 'react'
-import { checkAuthStatusThunk } from './feauters/boardSlice'
+import { checkAuthStatusThunk } from './feauters/authSlice'
 
 function App() {
    const dispatch = useDispatch()
