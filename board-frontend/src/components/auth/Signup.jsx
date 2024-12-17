@@ -1,7 +1,7 @@
 import { TextField, Button, Container, Typography, CircularProgress } from '@mui/material'
 import { useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { registerUserThunk } from '../../feauters/boardSlice'
+import { registerUserThunk } from '../../feauters/authSlice'
 
 const Signup = () => {
    const [name, setName] = useState('')

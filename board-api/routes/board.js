@@ -6,17 +6,20 @@ const { Board, User } = require('../models')
 const { isLoggedIn } = require('./middlewares')
 const router = express.Router()
 
-try {
-   fs.readFileSync('uploads')
-} catch (error) {
+const uploadDir = 'uploads'
+
+// uploads 폴더가 존재하는지 확인하고, 없으면 생성
+if (!fs.existsSync(uploadDir)) {
    console.log('uploads 폴더가 없습니다.')
-   fs.mkdirSync('uploads')
+   fs.mkdirSync(uploadDir)
+} else {
+   console.log('uploads 폴더가 이미 존재합니다.')
 }
 
 const upload = multer({
    storage: multer.diskStorage({
       destination(req, file, cb) {
-         cb(null, 'uploads/')
+         cb(null, uploadDir)
       },
       filename(req, file, cb) {
          const ext = path.extname(file.originalname)
