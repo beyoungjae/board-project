@@ -3,7 +3,7 @@ import CreateIcon from '@mui/icons-material/Create'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { fetchPostsThunk } from '../feauters/postSlice'
 import { logoutUserThunk } from '../feauters/authSlice'
 import styled from 'styled-components'
@@ -87,7 +87,6 @@ const UserInfo = styled.div`
 const HomePage = ({ isAuthenticated, user }) => {
    const [page, setPage] = useState(1) // 현재 페이지
    const dispatch = useDispatch()
-   const navigate = useNavigate()
    const { posts, pagination, loading, error } = useSelector((state) => state.posts)
 
    useEffect(() => {
@@ -98,12 +97,12 @@ const HomePage = ({ isAuthenticated, user }) => {
       dispatch(logoutUserThunk())
          .unwrap()
          .then(() => {
-            navigate('/')
+            window.location.href = '/'
          })
          .catch((error) => {
             alert(error)
          })
-   }, [dispatch, navigate])
+   }, [dispatch])
 
    const handlePageChange = useCallback((event, value) => {
       setPage(value)

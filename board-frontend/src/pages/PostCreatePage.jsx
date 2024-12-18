@@ -1,12 +1,10 @@
 import { Container } from '@mui/material'
 import PostForm from '../post/PostForm'
-import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { useCallback } from 'react'
 import { createPostThunk } from '../feauters/postSlice'
 
 const PostCreatePage = () => {
-   const navigate = useNavigate()
    const dispatch = useDispatch()
 
    const handleSubmit = useCallback(
@@ -14,14 +12,14 @@ const PostCreatePage = () => {
          dispatch(createPostThunk(postData))
             .unwrap()
             .then(() => {
-               navigate('/')
+               window.location.href = '/'
             })
             .catch((error) => {
                console.error('게시물 등록 에러: ', error)
                alert('게시물 등록에 실패했습니다.', error)
             })
       },
-      [dispatch, navigate]
+      [dispatch]
    )
 
    return (

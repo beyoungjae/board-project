@@ -79,6 +79,7 @@ router.put('/:id', isLoggedIn, upload.single('img'), async (req, res) => {
       }
 
       await post.update({
+         title: req.body.title,
          content: req.body.content,
          img: req.file ? `/${req.file.filename}` : post.img,
       })

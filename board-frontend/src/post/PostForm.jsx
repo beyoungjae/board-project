@@ -1,12 +1,12 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useMemo } from 'react'
 import { TextField, Button, Box } from '@mui/material'
 
 // 등록, 수정 폼 컴포넌트
 const PostForm = ({ onSubmit, initialValues = {} }) => {
-   const [imgUrl, setImgUrl] = useState('')
+   const [imgUrl, setImgUrl] = useState(initialValues.img ? process.env.REACT_APP_API_URL + initialValues.img : '')
    const [imgFile, setImgFile] = useState(null)
-   const [title, setTitle] = useState('')
-   const [content, setContent] = useState('')
+   const [title, setTitle] = useState(initialValues.title || '')
+   const [content, setContent] = useState(initialValues.content || '')
 
    // 이미지 파일 미리보기
    const handleImageChange = useCallback((e) => {
@@ -39,7 +39,7 @@ const PostForm = ({ onSubmit, initialValues = {} }) => {
             return
          }
 
-         if (!imgFile) {
+         if (!imgFile && !initialValues.id) {
             alert('이미지 파일을 추가하세요.')
             return
          }
@@ -51,8 +51,10 @@ const PostForm = ({ onSubmit, initialValues = {} }) => {
 
          onSubmit(formData)
       },
-      [title, content, imgFile, onSubmit]
+      [title, content, imgFile, onSubmit, initialValues.id]
    )
+
+   const submitButtonLabel = useMemo(() => (initialValues.id ? '수정' : '등록'), [initialValues.id])
 
    return (
       <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }} encType="multipart/form-data">
@@ -69,15 +71,25 @@ const PostForm = ({ onSubmit, initialValues = {} }) => {
          )}
 
          {/* 제목 입력 필드 */}
-         <TextField label="제목" variant="outlined" fullWidth multiline rows={1} value={title} onChange={(e) => setTitle(e.target.value)} sx={{ mt: 2 }} />
+         <TextField
+            label="제목"
+            variant="outlined"
+            fullWidth
+            multiline
+            rows={1}
+            value={title}
+            onChange={(e) => {
+               setTitle(e.target.value)
+            }}
+            sx={{ mt: 2 }}
+         />
 
          {/* 게시물 내용 입력 필드 */}
          <TextField label="게시물 내용" variant="outlined" fullWidth multiline rows={4} value={content} onChange={(e) => setContent(e.target.value)} sx={{ mt: 2 }} />
 
          {/* 등록 / 수정 버튼 */}
          <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
-            {/* {submitButtonLabel} */}
-            등록
+            {submitButtonLabel}
          </Button>
       </Box>
    )
