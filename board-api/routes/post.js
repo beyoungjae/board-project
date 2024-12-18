@@ -22,8 +22,10 @@ const upload = multer({
          cb(null, uploadDir)
       },
       filename(req, file, cb) {
-         const ext = path.extname(file.originalname)
-         cb(null, path.basename(file.originalname, ext) + Date.now() + ext)
+         const decodedFileName = decodeURIComponent(file.originalname)
+         const ext = path.extname(decodedFileName)
+         const basename = path.basename(decodedFileName, ext)
+         cb(null, basename + Date.now() + ext)
       },
    }),
    limits: {

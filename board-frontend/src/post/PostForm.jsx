@@ -47,7 +47,11 @@ const PostForm = ({ onSubmit, initialValues = {} }) => {
          const formData = new FormData()
          formData.append('title', title)
          formData.append('content', content)
-         formData.append('img', imgFile)
+
+         if (imgFile) {
+            const encodedFile = new File([imgFile], encodeURIComponent(imgFile.name), { type: imgFile.type })
+            formData.append('img', encodedFile)
+         }
 
          onSubmit(formData)
       },
