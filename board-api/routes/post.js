@@ -2,7 +2,7 @@ const express = require('express')
 const multer = require('multer')
 const path = require('path')
 const fs = require('fs')
-const { Board, User } = require('../models')
+const { Post, Board, User } = require('../models')
 const { isLoggedIn } = require('./middlewares')
 const router = express.Router()
 
@@ -42,7 +42,7 @@ router.post('/', isLoggedIn, upload.single('img'), async (req, res) => {
          })
       }
       // 정상적으로 등록하기
-      const post = await Board.create({
+      const post = await Post.create({
          title: req.body.title,
          content: req.body.content,
          img: `/${req.file.filename}`,
@@ -69,7 +69,7 @@ router.post('/', isLoggedIn, upload.single('img'), async (req, res) => {
 // 게시물 수정
 router.put('/:id', isLoggedIn, upload.single('img'), async (req, res) => {
    try {
-      const post = await Board.findOne({ where: { id: req.params.id, UserId: req.user.id } })
+      const post = await Post.findOne({ where: { id: req.params.id, UserId: req.user.id } })
 
       if (!post) {
          return res.status(404).json({
@@ -83,7 +83,7 @@ router.put('/:id', isLoggedIn, upload.single('img'), async (req, res) => {
          img: req.file ? `/${req.file.filename}` : post.img,
       })
 
-      const updatedPost = await Board.findOne({
+      const updatedPost = await Post.findOne({
          where: { id: req.params.id },
          include: [
             {
@@ -111,7 +111,7 @@ router.put('/:id', isLoggedIn, upload.single('img'), async (req, res) => {
 // 게시물 삭제
 router.delete('/:id', isLoggedIn, async (req, res) => {
    try {
-      const post = await Board.findOne({ where: { id: req.params.id, UserId: req.user.id } })
+      const post = await Post.findOne({ where: { id: req.params.id, UserId: req.user.id } })
 
       if (!post) {
          return res.status(404).json({ success: false, message: '게시물을 찾을 수 없습니다.' })
@@ -132,7 +132,7 @@ router.delete('/:id', isLoggedIn, async (req, res) => {
 // 특정 게시물 불러오기
 router.get('/:id', async (req, res) => {
    try {
-      const post = await Board.findOne({
+      const post = await Post.findOne({
          where: {
             id: req.params.id,
          },
@@ -170,9 +170,9 @@ router.get('/', async (req, res) => {
       const limit = parseInt(req.query.limit, 10) || 3
       const offset = (page - 1) * limit
 
-      const count = await Board.count()
+      const count = await Post.count()
 
-      const posts = await Board.findAll({
+      const posts = await Post.findAll({
          limit,
          offset,
          order: [['createdAt', 'DESC']],

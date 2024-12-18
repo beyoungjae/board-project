@@ -3,15 +3,15 @@ import PostForm from '../post/PostForm'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { useCallback } from 'react'
-import { createBoardThunk } from '../feauters/boardSlice'
+import { createPostThunk } from '../feauters/postSlice'
 
 const PostCreatePage = () => {
    const navigate = useNavigate()
    const dispatch = useDispatch()
 
    const handleSubmit = useCallback(
-      (boardData) => {
-         dispatch(createBoardThunk(boardData))
+      (postData) => {
+         dispatch(createPostThunk(postData))
             .unwrap()
             .then(() => {
                navigate('/')

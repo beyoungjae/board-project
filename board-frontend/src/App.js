@@ -21,7 +21,7 @@ function App() {
             <Route path="/" element={<HomePage isAuthenticated={isAuthenticated} user={user} />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/boards/create" element={<PostCreatePage />} />
+            <Route path="/posts/create" element={<PostCreatePage />} />
          </Routes>
       </>
    )

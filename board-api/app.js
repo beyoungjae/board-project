@@ -15,7 +15,7 @@ app.set('port', process.env.PORT || 8002)
 const { sequelize } = require('./models')
 const authRouter = require('./routes/auth')
 const indexRouter = require('./routes/index')
-const boardRouter = require('./routes/board')
+const postRouter = require('./routes/post')
 
 passportConfig()
 
@@ -62,7 +62,7 @@ app.use(passport.session())
 // 라우터 등록
 app.use('/', indexRouter)
 app.use('/auth', authRouter)
-app.use('/board', boardRouter)
+app.use('/post', postRouter)
 
 // 에러 처리
 app.use((req, res, next) => {

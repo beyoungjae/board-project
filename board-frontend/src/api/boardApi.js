@@ -57,14 +57,14 @@ export const checkAuthStatus = async () => {
 }
 
 // 포스트 등록
-export const createBoard = async (boardData) => {
+export const createPost = async (postData) => {
    try {
       const config = {
          headers: {
             'Content-Type': 'multipart/form-data',
          },
       }
-      const response = await boardApi.post('/board', boardData, config)
+      const response = await boardApi.post('/post', postData, config)
       return response
    } catch (error) {
       console.error(`API Request 오류: ${error.message}`)
@@ -73,14 +73,14 @@ export const createBoard = async (boardData) => {
 }
 
 // 포스트 수정
-export const updateBoard = async (id, boardData) => {
+export const updatePost = async (id, postData) => {
    try {
       const config = {
          headers: {
             'Content-Type': 'multipart/form-data',
          },
       }
-      const response = await boardApi.put(`/board/${id}`, boardData, config)
+      const response = await boardApi.put(`/post/${id}`, postData, config)
       return response
    } catch (error) {
       console.error(`API Request 오류: ${error.message}`)
@@ -89,9 +89,9 @@ export const updateBoard = async (id, boardData) => {
 }
 
 // 포스트 삭제
-export const deleteBoard = async (id) => {
+export const deletePost = async (id) => {
    try {
-      const response = await boardApi.delete(`/board/${id}`)
+      const response = await boardApi.delete(`/post/${id}`)
       return response
    } catch (error) {
       console.error(`API Request 오류: ${error.message}`)
@@ -100,9 +100,9 @@ export const deleteBoard = async (id) => {
 }
 
 // 특정 포스트 불러오기
-export const getBoardById = async (id) => {
+export const getPostById = async (id) => {
    try {
-      const response = await boardApi.get(`/board/${id}`)
+      const response = await boardApi.get(`/post/${id}`)
       return response
    } catch (error) {
       console.error(`API Request 오류: ${error.message}`)
@@ -111,9 +111,9 @@ export const getBoardById = async (id) => {
 }
 
 // 전체 포스트 가져오기(페이징)
-export const getBoards = async (page) => {
+export const getPosts = async (page) => {
    try {
-      const response = await boardApi.get(`/board?page=${page}`)
+      const response = await boardApi.get(`/post?page=${page}`)
       return response
    } catch (error) {
       console.error(`API Request 오류: ${error.message}`)
