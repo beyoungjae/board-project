@@ -9,11 +9,11 @@ const router = express.Router()
 const uploadDir = 'uploads'
 
 // uploads 폴더가 존재하는지 확인하고, 없으면 생성
-if (!fs.existsSync(uploadDir)) {
-   console.log('uploads 폴더가 없습니다.')
-   fs.mkdirSync(uploadDir)
-} else {
-   console.log('uploads 폴더가 이미 존재합니다.')
+try {
+   fs.readdirSync('uploads')
+} catch (error) {
+   console.log('uploads 폴더가 없어 uploads 폴더를 생성합니다.')
+   fs.mkdirSync('uploads')
 }
 
 const upload = multer({
