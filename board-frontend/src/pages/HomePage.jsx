@@ -32,12 +32,13 @@ const ActionButton = styled(Button)`
    padding: 10px 20px;
    font-size: 1rem;
    font-weight: 500;
-   background-color: #1976d2;
-   color: white;
+   background-color: rgb(145, 145, 145) !important;
+   color: white !important;
+   border: 0 transparent !important;
    border-radius: 50px;
    &:hover {
-      background-color: #1565c0;
-      transform: scale(1.05);
+      background-color: rgb(179, 179, 179) !important;
+      transform: scale(1.02);
    }
    transition: transform 0.3s ease;
 `
@@ -53,10 +54,6 @@ const LinkButton = styled(Link)`
    width: 80px;
    text-align: center;
    transition: all 0.3s ease-in-out;
-   &:hover {
-      background-color: rgb(185, 185, 185);
-      transform: scale(1.05);
-   }
 
    p {
       margin-top: 8px;
