@@ -16,6 +16,7 @@ const { sequelize } = require('./models')
 const authRouter = require('./routes/auth')
 const indexRouter = require('./routes/index')
 const postRouter = require('./routes/post')
+const pageRouter = require('./routes/page')
 
 passportConfig()
 
@@ -63,6 +64,7 @@ app.use(passport.session())
 app.use('/', indexRouter)
 app.use('/auth', authRouter)
 app.use('/post', postRouter)
+app.use('/page', pageRouter)
 
 // 에러 처리
 app.use((req, res, next) => {

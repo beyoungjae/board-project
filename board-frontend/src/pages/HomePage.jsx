@@ -1,88 +1,90 @@
-import { Container, Typography, Button, IconButton, Pagination, Stack } from '@mui/material'
+import { Container, Typography, Button, IconButton, Pagination, Stack, Box, AppBar, Toolbar } from '@mui/material'
 import CreateIcon from '@mui/icons-material/Create'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { fetchPostsThunk } from '../feauters/postSlice'
-import { logoutUserThunk } from '../feauters/authSlice'
+import { fetchPostsThunk } from '../features/postSlice'
+import { logoutUserThunk } from '../features/authSlice'
 import styled from 'styled-components'
 import PostItem from '../post/PostItem'
 
-const ContainerWrapper = styled(Container)`
-   background-color: #f9f9f9;
-   padding: 2rem;
-   border-radius: 12px;
-   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-   display: flex;
-   flex-direction: column;
-   align-items: center;
-   justify-content: center;
+const Header = styled(AppBar)`
+   background-color: rgba(0, 0, 0, 0.8) !important;
+   color: #eee;
+   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 `
 
-const TitleText = styled(Typography)`
+const HeaderToolbar = styled(Toolbar)`
+   display: flex;
+   justify-content: space-between;
+   padding: 10px 20px;
+   
+   @media (max-width: 600px) {
+      padding: 16px;
+   }
+`
+
+const Logo = styled(Typography)`
+   font-size: 3rem !important;
    font-weight: bold;
-   color: #333;
-   margin-bottom: 1.5rem;
-   font-size: 1.8rem;
+   color: #eee;
+   cursor: pointer;
 `
 
 const ActionButton = styled(Button)`
-   margin-top: 1rem;
-   padding: 10px 20px;
+   margin-left: 16px;
+   padding: 8px 24px;
+   border-radius: 50px;
+   text-transform: none;
    font-size: 1rem;
    font-weight: 500;
-   background-color: rgb(145, 145, 145) !important;
-   color: white !important;
-   border: 0 transparent !important;
-   border-radius: 50px;
+   background-color: #f5f5f5 !important;
+   color: #666 !important;
+   transition: all 0.2s ease;
+   
    &:hover {
-      background-color: rgb(179, 179, 179) !important;
-      transform: scale(1.02);
+      background-color: #eee !important;
    }
-   transition: transform 0.3s ease;
 `
 
-const LinkButton = styled(Link)`
+const UserInfo = styled(Box)`
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   margin-right: 16px;
+   color: #666;
+`
+
+const ActionButtons = styled(Box)`
+   display: flex;
+   gap: 16px;
+   margin-top: 32px;
+   margin-bottom: 48px;
+`
+
+const ActionIconButton = styled(Link)`
+   display: flex;
+   align-items: center;
+   padding: 8px 16px;
+   border-radius: 50px;
    text-decoration: none;
-   margin-right: 10px;
-   display: flex;
-   flex-direction: column;
-   align-items: center;
-   padding: 5px 5px;
-   border-radius: 30px;
-   width: 80px;
-   text-align: center;
-   transition: all 0.3s ease-in-out;
-
-   p {
-      margin-top: 8px;
-      font-size: 0.9rem;
-      color: rgb(46, 46, 46);
+   color: #666 !important;
+   background-color: #f5f5f5 !important;
+   transition: all 0.2s ease;
+   
+   &:hover {
+      background-color: #eee !important;
+      transform: translateY(-2px);
    }
-`
-
-const IconGroup = styled.div`
-   display: flex;
-   justify-content: center;
-   align-items: center;
-`
-
-const IconButtonWrapper = styled(IconButton)`
-   color: rgb(0, 0, 0);
-`
-
-const UserInfo = styled.div`
-   display: flex;
-   align-items: center;
-   justify-content: center;
-   margin-top: 1rem;
-   margin-bottom: 1rem;
-   color: #444;
+   
+   .icon {
+      margin-right: 8px;
+   }
 `
 
 const HomePage = ({ isAuthenticated, user }) => {
-   const [page, setPage] = useState(1) // 현재 페이지
+   const [page, setPage] = useState(1)
    const dispatch = useDispatch()
    const { posts, pagination, loading, error } = useSelector((state) => state.posts)
 
@@ -106,76 +108,91 @@ const HomePage = ({ isAuthenticated, user }) => {
    }, [])
 
    return (
-      <div>
-         <ContainerWrapper maxWidth="xs">
-            <TitleText variant="h4" align="center" gutterBottom>
-               게시판
-            </TitleText>
-            {isAuthenticated ? (
-               <>
-                  <IconGroup>
-                     <LinkButton to="/posts/create">
-                        <IconButtonWrapper aria-label="글쓰기">
-                           <CreateIcon />
-                        </IconButtonWrapper>
-                        <p>글쓰기</p>
-                     </LinkButton>
-                     <LinkButton to="/my">
-                        <IconButtonWrapper aria-label="마이페이지">
-                           <AccountCircleIcon />
-                        </IconButtonWrapper>
-                        <p>마이페이지</p>
-                     </LinkButton>
-                  </IconGroup>
-                  <UserInfo>
-                     <Typography variant="body1">{user?.name}님</Typography>
-                  </UserInfo>
-                  <ActionButton onClick={handleLogout} variant="outlined">
-                     로그아웃
-                  </ActionButton>
-               </>
-            ) : (
-               <LinkButton to="/login">
-                  <ActionButton variant="contained">로그인</ActionButton>
-               </LinkButton>
-            )}
-         </ContainerWrapper>
+      <>
+         <Header position="sticky">
+            <HeaderToolbar>
+               <Logo variant="h1" onClick={() => window.location.href = '/'}>
+                  게시판
+               </Logo>
+               <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  {isAuthenticated ? (
+                     <>
+                           <Link to="/my" style={{ textDecoration: 'none' }}>
+                           <AccountCircleIcon sx={{ color: '#eee', mr: 1 }} />
+                           </Link>
+                        <UserInfo>
+                           <Typography sx={{ color: '#eee' }}>{user?.name}님</Typography>
+                        </UserInfo>
+                        <ActionButton
+                           className="logout"
+                           onClick={handleLogout}
+                        >
+                           로그아웃
+                        </ActionButton>
+                     </>
+                  ) : (
+                     <Link to="/login" style={{ textDecoration: 'none' }}>
+                        <ActionButton className="login">
+                           로그인
+                        </ActionButton>
+                     </Link>
+                  )}
+               </Box>
+            </HeaderToolbar>
+         </Header>
 
-         <Container maxWidth="xs" sx={{ mt: 5 }}>
-            <Typography variant="h4" align="center" gutterBottom>
-               Home Feed
-            </Typography>
+         <Container maxWidth="md" sx={{ py: 4 }}>
+            {isAuthenticated && (
+               <ActionButtons>
+                  <ActionIconButton to="/posts/create">
+                     <CreateIcon className="icon" />
+                     글쓰기
+                  </ActionIconButton>
+               </ActionButtons>
+            )}
 
             {loading && (
-               <Typography variant="body1" align="center">
+               <Typography variant="h6" sx={{ textAlign: 'center', my: 4 }}>
                   로딩 중...
                </Typography>
             )}
 
             {posts.length > 0 ? (
                <>
-                  {posts.map((post) => (
-                     <PostItem key={post.id} post={post} isAuthenticated={isAuthenticated} user={user} />
-                  ))}
-                  <Stack spacing={2} sx={{ mt: 3, alignItems: 'center' }}>
-                     <Pagination count={pagination.totalPages} page={page} onChange={handlePageChange} />
+                  <Box sx={{ display: 'grid', gap: 3 }}>
+                     {posts.map((post) => (
+                        <PostItem key={post.id} post={post} isAuthenticated={isAuthenticated} user={user} />
+                     ))}
+                  </Box>
+                  <Stack spacing={2} sx={{ mt: 4, mb: 2, alignItems: 'center' }}>
+                     <Pagination
+                        count={pagination.totalPages}
+                        page={page}
+                        onChange={handlePageChange}
+                        size="large"
+                        sx={{
+                           '& .MuiPaginationItem-root': {
+                              fontSize: '1rem',
+                           }
+                        }}
+                     />
                   </Stack>
                </>
             ) : (
                !loading && (
-                  <Typography variant="body1" align="center">
+                  <Typography variant="h6" sx={{ textAlign: 'center', my: 4, color: '#666' }}>
                      게시물이 없습니다.
                   </Typography>
                )
             )}
 
             {error && (
-               <Typography variant="body1" align="center" color="error">
+               <Typography variant="body1" align="center" color="error" sx={{ mt: 4 }}>
                   에러 발생: {error}
                </Typography>
             )}
          </Container>
-      </div>
+      </>
    )
 }
 

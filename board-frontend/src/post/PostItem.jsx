@@ -1,69 +1,106 @@
-import { Card, CardMedia, CardContent, Typography, Box, CardActions, Button, IconButton } from '@mui/material'
+import { Card, CardContent, CardMedia, Typography, IconButton, Box, CardActions } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
-import { Link } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
-import dayjs from 'dayjs'
+import { Link, useNavigate } from 'react-router-dom'
 import { useCallback } from 'react'
-import { deletePostThunk } from '../feauters/postSlice'
+import { useDispatch } from 'react-redux'
+import { deletePostThunk } from '../features/postSlice'
+import dayjs from 'dayjs'
+import styled from 'styled-components'
+
+const StyledCard = styled(Card)`
+   margin: 20px 0;
+   border-radius: 12px;
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+   transition: transform 0.2s ease;
+   cursor: pointer;
+
+   &:hover {
+      transform: translateY(-4px);
+   }
+`
+
+const UserName = styled.span`
+   color: #666;
+   font-weight: 500;
+   &:hover {
+      text-decoration: underline;
+   }
+`
 
 const PostItem = ({ post, isAuthenticated, user }) => {
+   const navigate = useNavigate()
    const dispatch = useDispatch()
 
-   // 게시물 삭제 실행
    const onClickDelete = useCallback(
-      (id) => {
+      (e, postId) => {
+         e.stopPropagation()
          const confirmDelete = window.confirm('정말로 이 게시물을 삭제하시겠습니까?')
 
          if (confirmDelete) {
-            dispatch(deletePostThunk(id))
+            dispatch(deletePostThunk(postId))
                .unwrap()
                .then(() => {
-                  window.location.href = '/'
+                  window.location.reload()
                })
                .catch((error) => {
                   console.error('게시물 삭제 중 오류 발생: ', error)
                   alert('게시물 삭제에 실패했습니다.')
                })
-         } else {
-            alert('삭제가 취소되었습니다.')
          }
       },
       [dispatch]
    )
 
+   const handleUserClick = (e, userId) => {
+      e.stopPropagation()
+      navigate(`/my/${userId}`)
+   }
+
+   const handlePostClick = () => {
+      navigate(`/posts/${post.id}`)
+   }
+
    return (
-      <Card style={{ margin: '20px 0', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}>
-         <CardMedia sx={{ height: 240 }} image={`${process.env.REACT_APP_API_URL}${post.img}`} title={post.content} />
+      <StyledCard onClick={handlePostClick}>
+         <CardMedia
+            component="img"
+            sx={{ height: 'auto', maxHeight: '400px', width: '100%', objectFit: 'cover' }}
+            image={`${process.env.REACT_APP_API_URL}${post.img}`}
+            title={post.content}
+         />
          <CardContent>
-            <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#333' }}>
+            <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>
                {post.title}
             </Typography>
-            <Link to={`/my/${post.User.id}`} style={{ textDecoration: 'none' }}>
-               <Typography sx={{ color: 'primary.main', fontSize: '1rem', fontWeight: 500 }}>@{post.User.name}</Typography>
-            </Link>
-            <Typography sx={{ fontSize: '0.875rem', color: '#777' }}>{dayjs(post.createdAt).format('YYYY-MM-DD HH:mm:ss')}</Typography>
-            <Typography sx={{ fontSize: '1rem', color: '#555' }}>{post.content}</Typography>
-         </CardContent>
-         <CardActions>
-            <Button size="small" color="primary" sx={{ fontSize: '0.875rem' }}>
-               <FavoriteBorderIcon fontSize="small" />
-            </Button>
-            {isAuthenticated && post.User.id === user.id && (
-               <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between' }}>
-                  <Link to={`/posts/edit/${post.id}`}>
-                     <IconButton aria-label="edit" size="small">
-                        <EditIcon fontSize="small" />
-                     </IconButton>
-                  </Link>
-                  <IconButton aria-label="delete" size="small" onClick={() => onClickDelete(post.id)}>
-                     <DeleteIcon fontSize="small" />
-                  </IconButton>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+               <Box>
+                  <UserName onClick={(e) => handleUserClick(e, post.User.id)}>
+                     @{post.User.name}
+                  </UserName>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                     {dayjs(post.createdAt).format('YYYY년 MM월 DD일')}
+                  </Typography>
                </Box>
-            )}
-         </CardActions>
-      </Card>
+               {isAuthenticated && post.User.id === user.id && (
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                     <IconButton
+                        aria-label="edit"
+                        onClick={(e) => {
+                           e.stopPropagation()
+                           navigate(`/posts/edit/${post.id}`)
+                        }}
+                     >
+                        <EditIcon />
+                     </IconButton>
+                     <IconButton aria-label="delete" onClick={(e) => onClickDelete(e, post.id)}>
+                        <DeleteIcon />
+                     </IconButton>
+                  </Box>
+               )}
+            </Box>
+         </CardContent>
+      </StyledCard>
    )
 }
 

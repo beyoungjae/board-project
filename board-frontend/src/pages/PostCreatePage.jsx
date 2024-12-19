@@ -2,7 +2,7 @@ import { Container } from '@mui/material'
 import PostForm from '../post/PostForm'
 import { useDispatch } from 'react-redux'
 import { useCallback } from 'react'
-import { createPostThunk } from '../feauters/postSlice'
+import { createPostThunk } from '../features/postSlice'
 
 const PostCreatePage = () => {
    const dispatch = useDispatch()

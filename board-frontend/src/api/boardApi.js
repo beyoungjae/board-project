@@ -8,7 +8,7 @@ const boardApi = axios.create({
    headers: {
       'Content-Type': 'application/json',
    },
-   withCredentials: true, // 세션 쿠키를 요청에 포함
+   withCredentials: true // 세션 쿠키를 요청에 포함
 })
 
 // 회원가입
@@ -114,6 +114,28 @@ export const getPostById = async (id) => {
 export const getPosts = async (page) => {
    try {
       const response = await boardApi.get(`/post?page=${page}`)
+      return response
+   } catch (error) {
+      console.error(`API Request 오류: ${error.message}`)
+      throw error
+   }
+}
+
+// 내 프로필 가져오기
+export const getUserProfile = async () => {
+   try {
+      const response = await boardApi.get('/page/profile')
+      return response
+   } catch (error) {
+      console.error(`API Request 오류: ${error.message}`)
+      throw error
+   }
+}
+
+// 상대 프로필 가져오기
+export const getUserProfileById = async (id) => {
+   try {
+      const response = await boardApi.get(`/page/profile/${id}`)
       return response
    } catch (error) {
       console.error(`API Request 오류: ${error.message}`)

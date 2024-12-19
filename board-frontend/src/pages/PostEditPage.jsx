@@ -3,7 +3,7 @@ import { Container } from '@mui/material'
 import PostForm from '../post/PostForm'
 import { useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchPostByIdThunk, updatePostThunk } from '../feauters/postSlice'
+import { fetchPostByIdThunk, updatePostThunk } from '../features/postSlice'
 
 const PostEditPage = () => {
    const { id } = useParams()

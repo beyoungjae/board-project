@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback } from 'react'
 import { TextField, Button, Container, Typography, CircularProgress } from '@mui/material'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { loginUserThunk } from '../../feauters/authSlice'
+import { loginUserThunk } from '../../features/authSlice'
 
 const Login = () => {
    const [name, setName] = useState('') // 이름 상태
